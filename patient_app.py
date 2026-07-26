@@ -6,6 +6,7 @@ from triage_engine import calcola_priorita
 from pdf_engine import genera_pdf
 from core import next_node
 import os
+import base64
 
 st.set_page_config(layout="wide")
 
@@ -162,8 +163,8 @@ st.markdown(f"""
     text-align:center;
     font-family:'Palatino Linotype', 'Book Antiqua', Palatino, serif;
     font-size:clamp(40px, 8vw, 64px);
-    font-weight:700;
-    color:#14532D;
+    font-weight:900;
+    color:#111827;
     letter-spacing:1px;
     margin-top:15px;
     margin-bottom:15px;
@@ -258,6 +259,11 @@ st.markdown("""
     font-size:13px;
 
 }
+.novadent-footer img{
+
+    width:130px;
+
+}
 
 /* Nasconde header */
 
@@ -269,11 +275,20 @@ header{
 """, unsafe_allow_html=True)
 
 
-st.markdown("""
-<div class="novadent-footer">
-NovaDent • Digital Dental Workflow
-</div>
-""", unsafe_allow_html=True)
+def get_base64_image(path):
+    with open(path, "rb") as img:
+        return base64.b64encode(img.read()).decode()
+
+logo = get_base64_image("assets/novadent_logo.png")
+
+st.markdown(
+    f"""
+    <div class="novadent-footer">
+        <img src="data:image/png;base64,{logo}">
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 # =========================
 # HEADER
 # =========================
@@ -294,7 +309,7 @@ if node == "patient_info":
         font-size:26px;
         font-weight:700;
         margin-top:20px;
-        color:#14532D;
+        color:#111827;
     ">
     Benvenuto
     </div>

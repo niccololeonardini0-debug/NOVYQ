@@ -13,8 +13,6 @@ from datetime import datetime
 
 st.set_page_config(page_title="NovaDent Doctor", layout="wide")
 
-st.caption("Doctor Dashboard")
-
 # =========================
 # SESSION
 # =========================
@@ -27,8 +25,81 @@ if "doctor_logged" not in st.session_state:
 # =========================
 if not st.session_state.doctor_logged:
 
-    st.title("🧑‍⚕️ ARCHIVIO QUESTIONARI")
-    st.caption("NovaDent")
+    st.markdown(
+        """
+        <div style="
+            text-align:left;
+            font-family:'Inter','Arial',sans-serif;
+            font-size:15px;
+            font-weight:900;
+            color:#64748B;
+            margin-top:15px;
+            margin-bottom:45px;
+        ">
+            Doctor Dashboard
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        """
+        <div style="
+        text-align:center;
+        font-family:'Inter','Arial',sans-serif;
+        font-size:56px;
+        font-weight:900;
+        letter-spacing:-1.5px;
+        color:#111827;
+        margin-top:60px;
+        margin-bottom:10px;
+        ">
+        Archivio questionari
+        </div>
+
+        <div style="
+        text-align:center;
+        font-family:'Inter','Arial',sans-serif;
+        font-size:24px;
+        font-weight:700;
+        color:#0F766E;
+        margin-bottom:15px;
+        ">
+        NovaDent
+        </div>
+
+        <div style="
+        text-align:center;
+        font-family:'Inter','Arial',sans-serif;
+        font-size:15px;
+        font-weight:500;
+        color:#64748B;
+        margin-bottom:40px;
+        max-width:760px;
+        margin-left:auto;
+        margin-right:auto;
+        line-height:1.6;
+        ">
+        Piattaforma di pre-visita odontoiatrica che raccoglie informazioni anamnestiche e cliniche prima dell'appuntamento, offrendo al dentista un supporto per la valutazione iniziale del paziente.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        """
+        <div style="
+        text-align:center;
+        font-family:'Inter','Arial',sans-serif;
+        font-size:15px;
+        color:#64748B;
+        margin-bottom:20px;
+        ">
+        Accesso riservato allo studio odontoiatrico
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
@@ -45,34 +116,62 @@ if not st.session_state.doctor_logged:
             st.rerun()
 
         else:
-            st.error("Credenziali errate")
+            st.error("Accesso non riuscito. Verifica le credenziali inserite.")
 
     st.stop()
-
-
 # =========================
 # HEADER
 # =========================
 
-studio_nome = st.session_state.get("doctor_name", "")
-
 st.markdown(
-    f"""
-    <h3 style="text-align:center; color:#4CAF88;">
-        NovaDent
-    </h3>
-
-    <h1 style="text-align:center; color:#14532D;">
-        {studio_nome}
-    </h1>
+    """
+    <div style="
+        text-align:left;
+        font-family:'Inter','Arial',sans-serif;
+        font-size:15px;
+        font-weight:600;
+        color:#64748B;
+        margin-top:15px;
+        margin-bottom:45px;
+    ">
+        Doctor Dashboard
+    </div>
     """,
     unsafe_allow_html=True
 )
 
-st.caption("Sistema di triage odontoiatrico intelligente")
+
+st.markdown(
+    f"""
+    <div style="
+        text-align:center;
+        font-family:'Palatino Linotype','Book Antiqua',Palatino,serif;
+        font-size:clamp(40px,8vw,64px);
+        font-weight:1000;
+        color:#111827;
+        letter-spacing:1px;
+        margin-top:15px;
+        margin-bottom:15px;
+        text-shadow:0px 2px 4px rgba(0,0,0,0.12);
+    ">
+        {st.session_state.doctor_name}
+    </div>
+
+    <div style="
+        text-align:center;
+        font-family:'Inter','Arial',sans-serif;
+        font-size:22px;
+        font-weight:700;
+        color:#167D5A;
+        margin-bottom:45px;
+    ">
+        Pre-visite odontoiatriche
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 st.divider()
-
-
 # =========================
 # LOAD REQUESTS
 # =========================
@@ -206,17 +305,26 @@ for r in requests:
 # FOOTER
 # =========================
 
+import base64
+
+def get_base64_image(path):
+    with open(path, "rb") as img:
+        return base64.b64encode(img.read()).decode()
+
+
+logo = get_base64_image("assets/novadent_logo.png")
+
+
 st.markdown(
-"""
-<div style="
-position:fixed;
-bottom:12px;
-right:18px;
-font-size:12px;
-opacity:0.4;
-">
-NovaDent • Digital Dental Workflow
-</div>
-""",
-unsafe_allow_html=True
+    f"""
+    <div style="
+        position:fixed;
+        right:18px;
+        bottom:12px;
+        opacity:0.45;
+    ">
+        <img src="data:image/png;base64,{logo}" width="130">
+    </div>
+    """,
+    unsafe_allow_html=True
 )
