@@ -11,7 +11,7 @@ from datetime import datetime
 
 #init_db()
 
-st.set_page_config(page_title="NovaDent Doctor", layout="wide")
+st.set_page_config(page_title="Novyq Doctor", layout="wide")
 
 # =========================
 # SESSION
@@ -65,7 +65,7 @@ if not st.session_state.doctor_logged:
         color:#0F766E;
         margin-bottom:15px;
         ">
-        NovaDent
+        Novyq
         </div>
 
         <div style="
@@ -312,7 +312,7 @@ def get_base64_image(path):
         return base64.b64encode(img.read()).decode()
 
 
-logo = get_base64_image("assets/novadent_logo.png")
+logo = get_base64_image("assets/novyq_dental_logo.png")
 
 
 st.markdown(

@@ -279,7 +279,7 @@ def get_base64_image(path):
     with open(path, "rb") as img:
         return base64.b64encode(img.read()).decode()
 
-logo = get_base64_image("assets/novadent_logo.png")
+logo = get_base64_image("assets/novyq_dental_logo.png")
 
 st.markdown(
     f"""

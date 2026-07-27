@@ -42,9 +42,9 @@ def clean_text(value):
 
 
 
-class NovaDentPDF(FPDF):
+class NovyqPDF(FPDF):
 
-    def __init__(self, studio_name="NovaDent"):
+    def __init__(self, studio_name="NOVYQ dental"):
         super().__init__()
         self.studio_name = studio_name
 
@@ -102,7 +102,7 @@ class NovaDentPDF(FPDF):
         self.cell(
             0,
             10,
-            f"NovaDent - Pagina {self.page_no()}",
+            f"NOVIQ Dental - Pagina {self.page_no()}",
             align="C"
         )
 
@@ -143,7 +143,7 @@ def genera_pdf(
     priorita,
     photos=None
 ):
-    pdf = NovaDentPDF(
+    pdf = NovyqPDF(
         studio_name=doctor_name
     )
 
