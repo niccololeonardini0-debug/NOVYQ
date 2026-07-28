@@ -22,6 +22,13 @@ USERS = [
         "dr-niccolo-leonardini",
         "Dr. Niccolò Leonardini"
     ),
+
+    (
+        "alessandro.contese",
+        "4862",
+        "studio-dentistico-contese",
+        "Studio dentistico Contese"
+    ),
 #    (
 #        "marco.rossi",
 #        "7890",

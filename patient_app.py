@@ -164,7 +164,7 @@ st.markdown(f"""
     font-family:'Palatino Linotype', 'Book Antiqua', Palatino, serif;
     font-size:clamp(40px, 8vw, 64px);
     font-weight:900;
-    color:#111827;
+    color:#0B1F3A;
     letter-spacing:1px;
     margin-top:15px;
     margin-bottom:15px;
@@ -182,7 +182,7 @@ st.markdown("""
     color:#167D5A;
     margin-bottom:25px;
 ">
-    NovaDent
+    Novyq Dental - Questionario clinico pre-visita
 </div>
 """, unsafe_allow_html=True)
 
@@ -209,14 +209,13 @@ st.markdown("""
     margin-bottom:25px;
 }
 
-/* INPUT */
-
 .stTextInput input,
 .stNumberInput input{
 
     border-radius:12px;
     font-size:18px;
 }
+
 
 /* RADIO */
 
@@ -309,7 +308,7 @@ if node == "patient_info":
         font-size:26px;
         font-weight:700;
         margin-top:20px;
-        color:#111827;
+        color:#0B1F3A;
     ">
     Benvenuto
     </div>
@@ -338,8 +337,6 @@ if node == "patient_info":
     """, unsafe_allow_html=True)
 
     st.markdown("---")
-
-    col1, col2 = st.columns([3, 2])
 
     nome = st.text_input("Nome", key="nome_input")
 
@@ -481,7 +478,7 @@ elif node == "completed":
 
     I dati personali e sanitari inseriti nel presente questionario saranno trasmessi esclusivamente allo studio odontoiatrico presso il quale è stata richiesta la visita e utilizzati per finalità di assistenza sanitaria.
 
-    NovaDent fornisce esclusivamente la piattaforma informatica utilizzata per la raccolta e la gestione dei dati.
+    Novyq fornisce esclusivamente la piattaforma informatica utilizzata per la raccolta e la gestione dei dati.
 
     Proseguendo dichiari di aver letto l'informativa e autorizzi l'invio dei dati allo studio.
     """)

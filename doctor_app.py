@@ -34,7 +34,7 @@ if not st.session_state.doctor_logged:
             font-weight:900;
             color:#64748B;
             margin-top:15px;
-            margin-bottom:45px;
+            margin-bottom:35px;
         ">
             Doctor Dashboard
         </div>
@@ -51,7 +51,7 @@ if not st.session_state.doctor_logged:
         font-weight:900;
         letter-spacing:-1.5px;
         color:#111827;
-        margin-top:60px;
+        margin-top:20px;
         margin-bottom:10px;
         ">
         Archivio questionari
@@ -148,7 +148,7 @@ st.markdown(
         font-family:'Palatino Linotype','Book Antiqua',Palatino,serif;
         font-size:clamp(40px,8vw,64px);
         font-weight:1000;
-        color:#111827;
+        color:#0B1F3A;
         letter-spacing:1px;
         margin-top:15px;
         margin-bottom:15px;
