@@ -50,7 +50,7 @@ if not st.session_state.doctor_logged:
         font-size:56px;
         font-weight:900;
         letter-spacing:-1.5px;
-        color:#111827;
+        color:#111827
         margin-top:20px;
         margin-bottom:10px;
         ">
@@ -65,7 +65,7 @@ if not st.session_state.doctor_logged:
         color:#0F766E;
         margin-bottom:15px;
         ">
-        Novyq
+        Novyq Dental
         </div>
 
         <div style="

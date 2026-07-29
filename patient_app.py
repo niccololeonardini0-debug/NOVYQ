@@ -179,7 +179,7 @@ st.markdown("""
     text-align:center;
     font-size:20px;
     font-weight:700;
-    color:#167D5A;
+    color:#0F766E;
     margin-bottom:25px;
 ">
     Novyq Dental - Questionario clinico pre-visita
@@ -308,7 +308,7 @@ if node == "patient_info":
         font-size:26px;
         font-weight:700;
         margin-top:20px;
-        color:#0B1F3A;
+        color:#0B1F3A
     ">
     Benvenuto
     </div>
