@@ -13,7 +13,7 @@ USERS = [
         "iacopo.malandrucco",
         "5191",
         "dr-iacopo-malandrucco",
-        "Dr. Iacopo Malandrucco"
+        "Dr. Iacopo Malandrucco",
     ),
 
     (
@@ -48,12 +48,12 @@ print("\n===== NOVADENT STUDIO LINKS =====\n")
 
 for user in USERS:
 
-    username, password, studio_id, doctor_name = user
+    username, password, studio_id, doctor_name, doctor_email = user
 
     c.execute("""
     INSERT INTO users
-    (username,password,studio_id,doctor_name)
-    VALUES (%s,%s,%s,%s)
+    (username,password,studio_id,doctor_name,doctor_email)
+    VALUES (%s,%s,%s,%s,%s)
     ON CONFLICT (username) DO NOTHING
     """, user)
 

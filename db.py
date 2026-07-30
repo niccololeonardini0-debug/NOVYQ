@@ -19,7 +19,8 @@ def init_db():
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
         studio_id TEXT UNIQUE NOT NULL,
-        doctor_name TEXT NOT NULL
+        doctor_name TEXT NOT NULL,
+        doctor_email TEXT NOT NULL
     )
     """)
 
@@ -368,14 +369,26 @@ def mark_as_not_visited(request_id):
     conn.close()
 
 
-def create_user(username, password, studio_id, doctor_name):
+def create_user(username, password, studio_id, doctor_name, doctor_email):
     conn = get_conn()
     c = conn.cursor()
 
     c.execute("""
-    INSERT INTO users (username, password, studio_id, doctor_name)
-    VALUES (%s, %s, %s, %s)
-    """, (username, password, studio_id, doctor_name))
+    INSERT INTO users (
+        username,
+        password,
+        studio_id,
+        doctor_name,
+        doctor_email
+    )
+    VALUES (%s, %s, %s, %s, %s)
+    """, (
+        username,
+        password,
+        studio_id,
+        doctor_name,
+        doctor_email
+    ))
 
     conn.commit()
     conn.close()
@@ -393,6 +406,23 @@ def get_doctor_by_studio(studio_id):
     """, (studio_id,))
 
     row = c.fetchone()
+    conn.close()
+
+    return row[0] if row else None
+
+def get_doctor_email(studio_id):
+
+    conn = get_conn()
+    c = conn.cursor()
+
+    c.execute("""
+    SELECT doctor_email
+    FROM users
+    WHERE studio_id=%s
+    """, (studio_id,))
+
+    row = c.fetchone()
+
     conn.close()
 
     return row[0] if row else None

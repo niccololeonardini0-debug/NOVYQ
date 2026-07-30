@@ -2,8 +2,10 @@ import streamlit as st
 import json
 from datetime import date, datetime
 from db import insert_request, init_db
+from db import get_doctor_by_studio, get_doctor_email
 from triage_engine import calcola_priorita
 from pdf_engine import genera_pdf
+from email_service import send_notification_email
 from core import next_node
 import os
 import base64
@@ -154,6 +156,8 @@ if "root" in st.session_state and not isinstance(st.session_state.root, list):
 from db import get_doctor_by_studio
 
 doctor_name = get_doctor_by_studio(studio_id)
+
+doctor_email = get_doctor_email(studio_id)
 
 if not doctor_name:
     doctor_name = "Studio Odontoiatrico"
@@ -530,6 +534,13 @@ elif node == "completed":
             consenso_privacy=True,
             data_consenso=datetime.now().isoformat()
         )
+        send_notification_email(
+            patient_name=nome,
+            symptoms=answers.get("root", {}).get("answer", "Non specificato"),
+            priority=priorita,
+            doctor_email=doctor_email
+        )
+
 
         st.session_state.saved = True
 
