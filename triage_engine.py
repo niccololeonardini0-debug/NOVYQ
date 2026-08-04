@@ -629,6 +629,27 @@ def calcola_priorita(answers):
         if "meno di 1 mese" in flat_text:
             diagnosi["Complicanza implantare"] += 6
             motivi["Complicanza implantare"].append("Impianto inserito da meno di un mese")
+
+        impianto_recente = any(x in flat_text for x in ["meno di 1 mese", "1-6 mesi"])
+        segni_implantari = any(x in flat_text for x in [
+            "sanguinamento",
+            "dolore",
+            "gonfiore",
+            "pus",
+            "cattivo sapore",
+            "mobilità"
+        ])
+
+        if impianto_recente and "impianto" in flat_text and segni_implantari:
+            diagnosi["Peri-implantite"] += 10
+            motivi["Peri-implantite"].append("Impianto recente con segni peri-implantari")
+
+            diagnosi["Mucosite peri-implantare"] += 4
+            motivi["Mucosite peri-implantare"].append("Impianto recente con sanguinamento/gonfiore")
+
+            if "meno di 1 mese" in flat_text:
+                diagnosi["Complicanza implantare"] += 8
+                motivi["Complicanza implantare"].append("Impianto molto recente con sintomi")
     # ==========================
     # PARODONTO
     # ==========================
@@ -639,12 +660,19 @@ def calcola_priorita(answers):
             or "parodont" in flat_text
             or "sanguinamento" in flat_text
     ):
+        if impianto_recente and "impianto" in flat_text and segni_implantari:
+            diagnosi["Gengivite"] += 1
+            motivi["Gengivite"].append("Sanguinamento peri-implantare")
 
-        diagnosi["Gengivite"] += 2
-        motivi["Gengivite"].append("Sintomi gengivali")
+            diagnosi["Parodontite"] += 1
+            motivi["Parodontite"].append("Segni gengivali in presenza di impianto")
+        else:
 
-        diagnosi["Parodontite"] += 2
-        motivi["Parodontite"].append("Sintomi gengivali")
+            diagnosi["Gengivite"] += 2
+            motivi["Gengivite"].append("Sintomi gengivali")
+
+            diagnosi["Parodontite"] += 2
+            motivi["Parodontite"].append("Sintomi gengivali")
 
         # Sanguinamento
 

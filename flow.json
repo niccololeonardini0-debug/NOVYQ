@@ -1617,6 +1617,8 @@
     "Sanguinamento",
     "L'impianto si muove",
     "La corona si muove",
+    "più problemi tra cui il movimento dell'impianto o della corona",
+    "Difficoltà a masticare",
     "Altro"
   ],
   "next": "imp_2"
@@ -1709,7 +1711,7 @@
 },
 
 "imp_9": {
-  "question": "Cosa si muove?",
+  "question": "Si muove qualcosa?",
   "type": "radio",
   "options": [
     "Nulla",
@@ -1786,7 +1788,7 @@
   "question": "Quando è stato l'ultimo controllo dell'impianto?",
   "type": "radio",
   "options": [
-    "1 mese",
+    "Un mese o meno",
     "1-6 mesi",
     "6-12 mesi",
     "Più di un anno",

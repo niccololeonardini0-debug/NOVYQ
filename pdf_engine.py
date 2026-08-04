@@ -170,7 +170,7 @@ def genera_pdf(
     pdf.ln(4)
 
     # DIAGNOSI PRINCIPALE
-    write_heading(pdf, "DIAGNOSI PRINCIPALE")
+    write_heading(pdf, "IPOTESI CLINICA PRINCIPALE")
 
     if diagnosi:
         testo = clean_text(diagnosi)
@@ -192,21 +192,20 @@ def genera_pdf(
 
     # DIAGNOSI DIFFERENZIALI
     if diagnosi_differenziali:
-        write_heading(pdf, "DIAGNOSI DIFFERENZIALI/POSSIBILI CONDIZIONI CONCOMITANTI")
+        write_heading(pdf, "IPOTESI CLINICHE DIFFERENZIALI / POSSIBILI CONDIZIONI CONCOMITANTI")
 
         for d in diagnosi_differenziali:
-            pdf.set_x(10)
-            pdf.multi_cell(0, 7, f"- {clean_text(d)}")
+            riga = clean_text(d)
 
             if motivi_differenziali and d in motivi_differenziali and motivi_differenziali[d]:
-                pdf.set_x(10)
-                pdf.set_font("Arial", "B", 11)
-                pdf.multi_cell(0, 7, "Motivi:")
-                pdf.set_font("Arial", "", 11)
+                motivi = ", ".join(
+                    clean_text(m) for m in motivi_differenziali[d][:2] if clean_text(m)
+                )
+                if motivi:
+                    riga += f" ({motivi})"
 
-                for motivo in motivi_differenziali[d][:2]:
-                    pdf.set_x(10)
-                    pdf.multi_cell(0, 7, f"  - {clean_text(motivo)}")
+            pdf.set_x(10)
+            pdf.multi_cell(0, 7, f"- {riga}")
 
         pdf.ln(2)
 
