@@ -8,7 +8,6 @@ with open("flow.json", "r", encoding="utf-8") as f:
 # =========================
 
 for node, data in FLOW.items():
-
     nxt = data.get("next")
 
     if nxt and nxt != "completed" and nxt not in FLOW:
@@ -16,99 +15,45 @@ for node, data in FLOW.items():
             f"Errore nel flow.json: il nodo '{node}' punta a '{nxt}' che non esiste."
         )
 
-def next_node(node, answer):
 
+def next_node(node, answer):
     if isinstance(answer, list):
-        answer = " ".join(answer).lower()
+        answer = " ".join(answer).strip().lower()
     else:
         answer = str(answer).strip().lower()
 
-    # ROOT (solo qui logica clinica iniziale)
+    # ROOT: scelta iniziale
     if node == "root":
+        mapping = {
+            "dolore": "pain_1",
+            "gonfiore": "sw_1",
+            "trauma": "tr_1",
+            "dente rotto": "broken_1",
+            "otturazione o corona saltata": "rest_1",
+            "sanguinamento gengivale": "paro_1",
+            "gengive o denti mobili": "paro_1",
+            "problema con impianto": "imp_1",
+            "problema con apparecchio ortodontico": "ortho_1",
+            "dente mancante / protesi": "prost_1",
+            "estetica": "est_1",
+            "pulizia dei denti": "clean_1",
+            "controllo": "check_1",
+            "altro": "other_1",
+        }
 
-        if "dolore" in answer:
-            return "pain_1"
+        return mapping.get(answer, "med_1")
 
-        elif "gonfiore" in answer:
-            return "sw_1"
-
-        elif "trauma" in answer:
-            return "tr_1"
-
-        elif "dente rotto" in answer or "scheggiato" in answer:
-            return "tr_1"
-
-        elif "otturazione" in answer or "corona" in answer:
-            return "tr_1"
-
-        elif "sanguinamento" in answer:
-            return "paro_1"
-
-        elif "gengive" in answer or "mobili" in answer:
-            return "paro_1"
-
-        elif "impianto" in answer:
-            return "imp_1"
-
-
-        elif "apparecchio" in answer or "ortodont" in answer:
-
-            return "ortho_1"
-
-
-        elif "protesi" in answer or "mancante" in answer:
-
-            return "prost_1"
-
-
-
-        elif "estetica" in answer:
-
-            return "est_1"
-
-
-        elif "pulizia" in answer:
-
-            return "med_1"
-
-
-        elif "controllo" in answer:
-
-            return "med_1"
-
-
-        else:
-
-            return "med_1"
-
-    # 🔵 LOGICA GENERICA (FLOW GUIDATO SOLO DA JSON)
+    # FLUSSO GENERICO DAL JSON
     if node in FLOW:
-
-        # se esiste "next" nel flow lo usa
         base = FLOW[node].get("next")
 
-        # se non c'è next → fine
         if not base:
             return "completed"
 
-        # 🔥 VALIDAZIONE: se nodo non esiste, fallback sicuro
         if base not in FLOW and base != "completed":
             return "med_1"
 
         return base
 
-    # 🔴 FALLBACK ASSOLUTO (MAI CRASH)
+    # FALLBACK ASSOLUTO
     return "med_1"
-
-    base = FLOW.get(node, {}).get("next", "completed")
-
-    # gestione trauma frattura
-    if node == "tr_1":
-
-        if "mastic" in answer or "cibo" in answer or "morso" in answer:
-            return "tr_2"
-
-        if "caduta" in answer or "colpo" in answer or "sport" in answer:
-            return "tr_2"
-
-    return base

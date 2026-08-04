@@ -8,6 +8,7 @@ from db import (
 )
 import json
 from datetime import datetime
+from db import save_doctor_note
 
 #init_db()
 
@@ -65,7 +66,7 @@ if not st.session_state.doctor_logged:
         color:#0F766E;
         margin-bottom:15px;
         ">
-        Novyq Dental
+        NOVYQ Dental
         </div>
 
         <div style="
@@ -178,6 +179,26 @@ st.divider()
 
 requests = get_requests(st.session_state.studio_id)
 
+priorita_order = {
+    "ALTA": 0,
+    "MEDIA": 1,
+    "BASSA": 2
+}
+
+requests = sorted(
+    requests,
+    key=lambda r: (
+        r[9],  # non visitati prima
+        priorita_order.get(
+            json.loads(r[6]).get("priorita", "BASSA")
+            if r[6] else "BASSA",
+            2
+        ),
+        -datetime.fromisoformat(str(r[7])).timestamp()
+        if r[7] else 0
+    )
+)
+
 if not requests:
     st.info("Nessuna richiesta presente")
     st.stop()
@@ -205,7 +226,20 @@ if search:
 # =========================
 # LISTA PAZIENTI
 # =========================
+col_nome, col_eta, col_motivo, col_ipotesi, col_priorita, col_data, col_pdf, col_stato = st.columns(
+    [2.3, 0.7, 2.2, 2.6, 0.9, 1.3, 0.6, 0.7]
+)
 
+col_nome.markdown("**Paziente**")
+col_eta.markdown("**Età**")
+col_motivo.markdown("**Motivo**")
+col_ipotesi.markdown("**Ipotesi**")
+col_priorita.markdown("**Priorità**")
+col_data.markdown("**Data**")
+col_pdf.markdown("**PDF**")
+col_stato.markdown("**Stato**")
+
+st.divider()
 
 for r in requests:
 
@@ -228,6 +262,7 @@ for r in requests:
 
     try:
         ai_report = json.loads(r[6]) if r[6] else {}
+        doctor_note = r[10] if len(r) > 10 else ""
 
     except:
         ai_report = {}
@@ -244,37 +279,43 @@ for r in requests:
     pdf_url = r[8]
 
     if priorita == "ALTA":
-        badge = "🔴 ALTA"
+        badge = "<span style='font-size:15px;font-weight:700;'>🔴 ALTA</span>"
 
     elif priorita == "MEDIA":
-        badge = "🟡 MEDIA"
+        badge = "<span style='font-size:15px;font-weight:700;'>🟡 MEDIA</span>"
 
     else:
-        badge = "🟢 BASSA"
+        badge = "<span style='font-size:15px;font-weight:700;'>🟢 BASSA</span>"
 
-    col1, col2, col3 = st.columns([5, 1, 1])
 
-    with col1:
 
-        st.markdown(
-            f"""
-    **👤 {nome} {cognome} · {eta}a**  {badge}
+    col_nome, col_eta, col_motivo, col_ipotesi, col_priorita, col_data, col_pdf, col_stato = st.columns(
+        [2.3, 0.7, 2.2, 2.6, 0.9, 1.3, 0.6, 0.7]
+    )
 
-    🦷 {motivo if motivo else 'Non specificato'}  
-    💡 {ipotesi} · 📅 {data_richiesta}
-    """,
-            unsafe_allow_html=True
-        )
+    with col_nome:
+        st.write(f"**{nome} {cognome}**")
 
-    with col2:
+    with col_eta:
+        st.write(eta)
 
+    with col_motivo:
+        st.write(motivo if motivo else "—")
+
+    with col_ipotesi:
+        st.write(ipotesi)
+
+    with col_priorita:
+        st.markdown(badge, unsafe_allow_html=True)
+
+    with col_data:
+        st.write(data_richiesta)
+
+    with col_pdf:
         if pdf_url:
-            st.link_button(
-                "📄",
-                pdf_url
-            )
+            st.link_button("📄", pdf_url)
 
-    with col3:
+    with col_stato:
 
         if visitato == 0:
 
@@ -296,8 +337,23 @@ for r in requests:
                 mark_as_not_visited(patient_id)
                 st.rerun()
 
+    doctor_note = r[10] if len(r) > 10 else ""
+
+    with st.expander("📝 Note del dentista"):
+        note = st.text_area(
+            "Scrivi una nota",
+            value=doctor_note or "",
+            key=f"note_{patient_id}",
+            height=120
+        )
+
+        if st.button("Salva nota", key=f"save_note_{patient_id}"):
+            save_doctor_note(patient_id, note)
+            st.success("Nota salvata")
+            st.rerun()
+
     st.markdown(
-        "<hr style='margin:8px 0'>",
+        "<hr style='margin:2px 0'>",
         unsafe_allow_html=True
     )
 

@@ -1,7 +1,11 @@
 import streamlit as st
 import json
 from datetime import date, datetime
-from db import insert_request, init_db
+from db import (
+    insert_request,
+    save_signature,
+    init_db
+)
 from db import get_doctor_by_studio, get_doctor_email
 from triage_engine import calcola_priorita
 from pdf_engine import genera_pdf
@@ -47,89 +51,78 @@ with open("flow.json", "r", encoding="utf-8") as f:
 
 PROBLEM_MAP = {
     "Dolore": [
-        "pain_1",
-        "pain_2",
-        "pain_3",
-        "pain_4",
-        "pain_5",
-        "pain_6",
-        "pain_7",
-        "pain_8",
-        "pain_9"
+        "pain_1","pain_2","pain_3","pain_4","pain_5","pain_6","pain_7","pain_8",
+        "pain_9","pain_10","pain_11","pain_12","pain_13","pain_14","pain_15",
+        "pain_16","pain_17","pain_18","pain_19","pain_20"
     ],
 
     "Gonfiore": [
-        "sw_1",
-        "sw_2",
-        "sw_3",
-        "sw_4",
-        "sw_5"
+        "sw_1","sw_2","sw_3","sw_4","sw_5","sw_6","sw_7","sw_8","sw_9",
+        "sw_10","sw_11","sw_12","sw_13","sw_14","sw_15","sw_16","sw_17"
     ],
 
     "Trauma": [
-        "tr_1",
-        "tr_2",
-        "tr_3",
-        "tr_4",
-        "tr_5"
+        "tr_1","tr_2","tr_3","tr_4","tr_5","tr_6","tr_7","tr_8","tr_9",
+        "tr_10","tr_11","tr_12","tr_13","tr_14","tr_15","tr_16","tr_17","tr_18"
     ],
 
     "Dente rotto": [
-        "tr_1",
-        "tr_2",
-        "tr_3",
-        "tr_4",
-        "tr_5"
+        "broken_1","broken_2","broken_3","broken_4","broken_5","broken_6",
+        "broken_7","broken_8","broken_9","broken_10","broken_11","broken_12",
+        "broken_13"
+    ],
+
+    "Otturazione o corona saltata": [
+        "rest_1","rest_2","rest_3","rest_4","rest_5","rest_5b","rest_6",
+        "rest_7","rest_8","rest_9","rest_10","rest_11","rest_11b",
+        "rest_12","rest_13"
     ],
 
     "Sanguinamento gengivale": [
-        "paro_1",
-        "paro_2",
-        "paro_3",
-        "paro_4",
-        "paro_5"
+        "paro_1","paro_2","paro_3","paro_4","paro_5","paro_6","paro_7",
+        "paro_8","paro_9","paro_10","paro_11","paro_12","paro_13",
+        "paro_14","paro_15","paro_16","paro_17","paro_18"
     ],
 
     "Gengive o denti mobili": [
-        "paro_1",
-        "paro_2",
-        "paro_3",
-        "paro_4",
-        "paro_5"
+        "paro_1","paro_2","paro_3","paro_4","paro_5","paro_6","paro_7",
+        "paro_8","paro_9","paro_10","paro_11","paro_12","paro_13",
+        "paro_14","paro_15","paro_16","paro_17","paro_18"
     ],
 
     "Problema con impianto": [
-        "imp_1",
-        "imp_2",
-        "imp_3",
-        "imp_4"
+        "imp_1","imp_2","imp_3","imp_4","imp_5","imp_6","imp_7","imp_8",
+        "imp_9","imp_10","imp_11","imp_12","imp_13","imp_14","imp_15",
+        "imp_16","imp_17"
     ],
 
     "Problema con apparecchio ortodontico": [
-        "ortho_1",
-        "ortho_2",
-        "ortho_3"
+        "ortho_1","ortho_2","ortho_3","ortho_4","ortho_5","ortho_6",
+        "ortho_7","ortho_8","ortho_9","ortho_10","ortho_11","ortho_12",
+        "ortho_13"
     ],
 
     "Dente mancante / Protesi": [
-        "prost_1",
-        "prost_2",
-        "prost_3",
-        "prost_4",
-        "prost_5",
-        "prost_6"
+        "prost_1","prost_2","prost_3","prost_4","prost_5","prost_6",
+        "prost_7","prost_8","prost_9","prost_10","prost_11","prost_12",
+        "prost_13","prost_14","prost_15"
     ],
 
     "Estetica": [
-        "est_1",
-        "est_2"
+        "est_1","est_2","est_3","est_4","est_5","est_6","est_7","est_8","est_9"
     ],
 
-    "Pulizia dei denti": [],
+    "Pulizia dei denti": [
+        "clean_1","clean_2","clean_3","clean_4","clean_5","clean_6","clean_7"
+    ],
 
-    "Controllo": [],
+    "Controllo": [
+        "check_1","check_2","check_3","check_4","check_5"
+    ],
 
-    "Altro": []
+    "Altro": [
+        "other_1","other_2","other_3","other_4","other_5"
+    ]
 }
 
 def is_last_node(node_id):
@@ -149,9 +142,7 @@ if "patient_data" not in st.session_state:
 
 if "question_path" not in st.session_state:
     st.session_state.question_path = []
-# reset vecchio widget root dopo passaggio radio -> multiselect
-if "root" in st.session_state and not isinstance(st.session_state.root, list):
-    del st.session_state.root
+
 
 from db import get_doctor_by_studio
 
@@ -186,7 +177,7 @@ st.markdown("""
     color:#0F766E;
     margin-bottom:25px;
 ">
-    Novyq Dental - Questionario clinico pre-visita
+    NOVYQ Dental - Questionario clinico pre-visita
 </div>
 """, unsafe_allow_html=True)
 
@@ -491,28 +482,48 @@ elif node == "completed":
         "Ho letto l'informativa privacy e autorizzo il trattamento dei miei dati."
     )
 
+    firma = st.text_input(
+        "Firma",
+        placeholder="Nome e Cognome"
+    )
+
+    st.caption(
+        "Digitando il tuo nome e cognome confermi la tua identità, "
+        "dichiari che le informazioni inserite sono corrette e "
+        "autorizzi il loro invio allo studio odontoiatrico."
+    )
+
     if not consenso:
         st.warning("Devi accettare il consenso per inviare il questionario.")
         st.stop()
 
-    if "saved" not in st.session_state:
+    if firma.strip() == "":
+        st.warning("Inserisci la firma prima di inviare il questionario.")
+        st.stop()
+
+    if st.button("Confermo firma e invio") and "saved" not in st.session_state:
+        st.session_state.patient_data["firma"] = firma
 
         patient = st.session_state.patient_data
-
         nome = f"{patient['nome']} {patient['cognome']}"
         eta = patient["eta"]
 
         answers = st.session_state.get("answers", {})
         studio_id = st.session_state.get("studio_id", "default")
 
-        priorita, score, red_flags, ipotesi = calcola_priorita(answers)
+        risultato = calcola_priorita(answers)
 
-        ai_report = {
-            "priorita": priorita,
-            "score": score,
-            "red_flags": red_flags,
-            "ipotesi": ipotesi
-        }
+        priorita = risultato["priorita"]
+        score = risultato["score"]
+        red_flags = risultato["red_flags"]
+        ipotesi = risultato["ipotesi"]
+        compatibilita = risultato["compatibilita"]
+        diagnosi_differenziali = risultato["diagnosi_differenziali"]
+        motivi_principali = risultato["motivi_principali"]
+        motivi_differenziali = risultato["motivi_differenziali"]
+        report_ai = risultato["report_ai"]
+
+        ai_report = risultato
 
         pdf_path = genera_pdf(
             patient_data=patient,
@@ -521,11 +532,15 @@ elif node == "completed":
             sintesi=answers,
             diagnosi=ipotesi,
             priorita=priorita,
-            photos = st.session_state.get("photos", [])
+            compatibilita=compatibilita,
+            diagnosi_differenziali=diagnosi_differenziali,
+            motivi_principali=motivi_principali,
+            motivi_differenziali=motivi_differenziali,
+            report_ai=report_ai,
+            photos=st.session_state.get("photos", [])
         )
-        import os
 
-        insert_request(
+        request_id = insert_request(
             patient,
             studio_id,
             answers=answers,
@@ -534,13 +549,18 @@ elif node == "completed":
             consenso_privacy=True,
             data_consenso=datetime.now().isoformat()
         )
+
+        save_signature(
+            request_id,
+            firma
+        )
+
         send_notification_email(
             patient_name=nome,
             symptoms=answers.get("root", {}).get("answer", "Non specificato"),
             priority=priorita,
             doctor_email=doctor_email
         )
-
 
         st.session_state.saved = True
 
@@ -582,7 +602,7 @@ elif node in FLOW:
 
         answer = []
 
-        st.caption("Seleziona uno o due motivi principali della visita")
+        st.caption("Seleziona il motivo principale della visita")
 
         for option in flow.get("options", []):
 
@@ -592,9 +612,8 @@ elif node in FLOW:
             ):
                 answer.append(option)
 
-        if len(answer) > flow.get("max_selections", 2):
-            st.warning("Puoi selezionare massimo 2 problemi.")
-            answer = answer[:2]
+        if len(answer) > flow.get("max_selections", 1):
+            st.error("Puoi selezionare massimo 1 problema.")
 
 
     elif flow.get("type") == "radio":
@@ -656,7 +675,6 @@ elif node in FLOW:
     # =========================
     # BUTTON LABEL LOGIC
     # =========================
-
     next_n = next_node(node, answer)
 
     if node == "patient_info":
@@ -676,37 +694,66 @@ elif node in FLOW:
             "answer": answer
         }
 
+        if node == "prost_5":
+            if str(answer).strip().lower() == "nessuna protesi":
+                for n in ["prost_8", "prost_9", "prost_10"]:
+                    if n in st.session_state.question_path:
+                        st.session_state.question_path.remove(n)
+
+        if node == "imp_13":
+            if str(answer).strip().lower() == "no":
+                if "imp_14" in st.session_state.question_path:
+                    st.session_state.question_path.remove("imp_14")
+
+        if node == "sw_14":
+            if str(answer).strip().lower() == "no":
+                if "sw_15" in st.session_state.question_path:
+                    st.session_state.question_path.remove("sw_15")
+
+        if node == "imp_4":
+            imp4 = str(answer).strip().lower()
+            if imp4 in ["meno di 1 mese", "1-6 mesi"]:
+                if "imp_15" in st.session_state.question_path:
+                    st.session_state.question_path.remove("imp_15")
+
+        if node == "imp_4":
+            imp4 = str(answer).strip().lower()
+
+            if imp4 in ["meno di 1 mese", "1-6 mesi"]:
+                if "imp_15" in st.session_state.question_path:
+                    st.session_state.question_path.remove("imp_15")
+            else:
+                if "imp_15" not in st.session_state.question_path:
+                    idx = st.session_state.question_path.index("imp_14") + 1
+                    st.session_state.question_path.insert(idx, "imp_15")
+
         # SCELTA PROBLEMI
         if node == "root":
 
-            if len(answer) > 2:
-                st.error("Puoi selezionare massimo 2 problemi.")
+            answer = str(answer).strip()
+
+            if not answer:
+                st.error("Seleziona un problema.")
                 st.stop()
 
-            percorso = []
+            if answer not in PROBLEM_MAP:
+                st.error(f"Problema non riconosciuto: {answer}")
+                st.stop()
 
-            for problema in answer:
+            percorso = PROBLEM_MAP[answer].copy()
 
-                if problema in PROBLEM_MAP:
-                    percorso.extend(PROBLEM_MAP[problema])
-
-            # aggiunge anamnesi medica finale
             percorso.extend([
+                "med_extra",
                 "med_1",
                 "med_2",
+                "med_3",
+                "med_4",
                 "med_5",
-                "med_12",
-                "med_13",
-                "med_14",
-                "med_15",
-                "med_16"
+                "med_6",
+                "med_7"
             ])
 
-            # elimina eventuali duplicati mantenendo l'ordine
-            percorso = list(dict.fromkeys(percorso))
-
             st.session_state.question_path = percorso
-
             st.session_state.node = percorso[0]
 
 

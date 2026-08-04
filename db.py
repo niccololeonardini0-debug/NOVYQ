@@ -48,9 +48,31 @@ def init_db():
         pdf_path TEXT,
         risposta_medico TEXT,
         consenso_privacy INTEGER,
-        data_consenso TEXT
+        data_consenso TEXT,
+        visitato INTEGER DEFAULT 0,
+        data_visita TEXT,
+        firma_paziente TEXT,
+        doctor_note TEXT
     )
     """)
+
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS clinical_history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        patient_id INTEGER,
+        request_id INTEGER,
+        sintesi TEXT,
+        diagnosi TEXT,
+        red_flags TEXT,
+        priorita TEXT,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+
+    c.execute("ALTER TABLE requests ADD COLUMN IF NOT EXISTS visitato INTEGER DEFAULT 0")
+    c.execute("ALTER TABLE requests ADD COLUMN IF NOT EXISTS data_visita TEXT")
+    c.execute("ALTER TABLE requests ADD COLUMN IF NOT EXISTS firma_paziente TEXT")
+    c.execute("ALTER TABLE requests ADD COLUMN IF NOT EXISTS doctor_note TEXT")
 
     conn.commit()
     conn.close()
@@ -162,6 +184,7 @@ def insert_request(
         data_consenso
     )
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    RETURNING id
     """, (
         nome,
         cognome,
@@ -182,6 +205,42 @@ def insert_request(
         1 if consenso_privacy else 0,
         data_consenso
     ))
+    request_id = c.fetchone()[0]
+
+    conn.commit()
+    conn.close()
+
+    return request_id
+
+def save_signature(request_id, firma):
+
+    conn = get_conn()
+    c = conn.cursor()
+
+    c.execute("""
+    UPDATE requests
+    SET firma_paziente=%s
+    WHERE id=%s
+    """, (
+        firma,
+        request_id
+    ))
+
+    conn.commit()
+    conn.close()
+
+def save_doctor_note(request_id, note):
+    conn = get_conn()
+    c = conn.cursor()
+
+    c.execute("""
+    UPDATE requests
+    SET doctor_note=%s
+    WHERE id=%s
+    """, (
+        note,
+        request_id
+    ))
 
     conn.commit()
     conn.close()
@@ -194,16 +253,17 @@ def get_requests(studio_id):
 
     c.execute("""
     SELECT
-        id,
-        patient_name,
-        patient_surname,
-        patient_age,
-        symptoms,
-        anamnesis,
-        ai_report,
-        created_at,
-        pdf_path,
-        visitato
+    id,
+    patient_name,
+    patient_surname,
+    patient_age,
+    symptoms,
+    anamnesis,
+    ai_report,
+    created_at,
+    pdf_path,
+    visitato,
+    doctor_note
     FROM requests
     WHERE studio_id=%s
     ORDER BY visitato ASC, created_at DESC
@@ -313,21 +373,6 @@ def get_history(patient_id):
     conn.close()
 
     return data
-
-def get_doctor_by_studio(studio_id):
-    conn = get_conn()
-    c = conn.cursor()
-
-    c.execute("""
-    SELECT doctor_name
-    FROM users
-    WHERE studio_id=%s
-    """, (studio_id,))
-
-    row = c.fetchone()
-    conn.close()
-
-    return row[0] if row else None
 
 def mark_as_visited(request_id):
 
