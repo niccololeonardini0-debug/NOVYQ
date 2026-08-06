@@ -1,4 +1,3 @@
-import streamlit as st
 import json
 from datetime import date, datetime
 from db import (
@@ -13,6 +12,23 @@ from email_service import send_notification_email
 from core import next_node
 import os
 import base64
+import streamlit as st
+
+st.set_page_config(
+    page_title="Novyq Dental",
+    page_icon="🦷",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
+
+st.markdown("""
+<style>
+#MainMenu {visibility: hidden;}
+header {visibility: hidden;}
+footer {visibility: hidden;}
+[data-testid="collapsedControl"] {display: none;}
+</style>
+""", unsafe_allow_html=True)
 
 st.set_page_config(layout="wide")
 
