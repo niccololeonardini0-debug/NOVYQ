@@ -242,20 +242,6 @@ if search:
 # =========================
 # LISTA PAZIENTI
 # =========================
-col_nome, col_eta, col_motivo, col_ipotesi, col_priorita, col_data, col_pdf, col_stato = st.columns(
-    [2.3, 0.7, 2.2, 2.6, 0.9, 1.3, 0.6, 0.7]
-)
-
-col_nome.markdown("**Paziente**")
-col_eta.markdown("**Età**")
-col_motivo.markdown("**Motivo**")
-col_ipotesi.markdown("**Ipotesi**")
-col_priorita.markdown("**Priorità**")
-col_data.markdown("**Data**")
-col_pdf.markdown("**PDF**")
-col_stato.markdown("**Stato**")
-
-st.divider()
 
 for r in requests:
 
@@ -272,110 +258,152 @@ for r in requests:
         data_richiesta = datetime.fromisoformat(
             str(data_richiesta)
         ).strftime("%d/%m/%Y %H:%M")
-
     except:
         pass
 
     try:
         ai_report = json.loads(r[6]) if r[6] else {}
         doctor_note = r[10] if len(r) > 10 else ""
-
     except:
         ai_report = {}
-
+        doctor_note = ""
 
     priorita = ai_report.get("priorita", "BASSA")
-
     ipotesi = ai_report.get("ipotesi", "—")
 
     # =========================
-    # CARD PAZIENTE COMPATTA
+    # CARD PAZIENTE
     # =========================
 
-    pdf_url = r[8]
+    with st.container(border=True):
 
-    if priorita == "ALTA":
-        badge = "<span style='font-size:15px;font-weight:700;'>🔴 ALTA</span>"
+        # TESTATA
+        header_col1, header_col2 = st.columns([4, 1])
 
-    elif priorita == "MEDIA":
-        badge = "<span style='font-size:15px;font-weight:700;'>🟡 MEDIA</span>"
+        with header_col1:
+            st.markdown(
+                f"### {nome} {cognome}"
+            )
 
-    else:
-        badge = "<span style='font-size:15px;font-weight:700;'>🟢 BASSA</span>"
+            st.caption(
+                f"{eta} anni"
+            )
 
+        with header_col2:
 
+            if priorita == "ALTA":
+                st.error("🔴 ALTA")
 
-    col_nome, col_eta, col_motivo, col_ipotesi, col_priorita, col_data, col_pdf, col_stato = st.columns(
-        [2.3, 0.7, 2.2, 2.6, 0.9, 1.3, 0.6, 0.7]
-    )
+            elif priorita == "MEDIA":
+                st.warning("🟡 MEDIA")
 
-    with col_nome:
-        st.write(f"**{nome} {cognome}**")
+            else:
+                st.success("🟢 BASSA")
 
-    with col_eta:
-        st.write(eta)
+        # =========================
+        # INFORMAZIONI
+        # =========================
 
-    with col_motivo:
-        st.write(motivo if motivo else "—")
+        info1, info2, info3, info4 = st.columns(4)
 
-    with col_ipotesi:
-        st.write(ipotesi)
+        with info1:
+            st.caption("MOTIVO")
+            st.write(
+                motivo if motivo else "—"
+            )
 
-    with col_priorita:
-        st.markdown(badge, unsafe_allow_html=True)
+        with info2:
+            st.caption("IPOTESI CLINICA")
+            st.write(
+                ipotesi
+            )
 
-    with col_data:
-        st.write(data_richiesta)
+        with info3:
+            st.caption("DATA E ORA")
+            st.write(
+                data_richiesta
+            )
 
-    with col_pdf:
-        if pdf_url:
-            st.link_button("📄", pdf_url)
+        with info4:
+            st.caption("STATO")
 
-    with col_stato:
+            if visitato == 0:
+                st.write("🔵 Da visitare")
+            else:
+                st.write("🟢 Visitato")
 
-        if visitato == 0:
+        # =========================
+        # AZIONI
+        # =========================
 
-            if st.button(
-                    "✅",
-                    key=f"visit_{patient_id}",
-                    help="Segna come visitato"
-            ):
-                mark_as_visited(patient_id)
-                st.rerun()
+        st.markdown("")
 
-        else:
-
-            if st.button(
-                    "↩️",
-                    key=f"unvisit_{patient_id}",
-                    help="Segna come non visitato"
-            ):
-                mark_as_not_visited(patient_id)
-                st.rerun()
-
-    doctor_note = r[10] if len(r) > 10 else ""
-
-    with st.expander("📝 Note del dentista"):
-        note = st.text_area(
-            "Scrivi una nota",
-            value=doctor_note or "",
-            key=f"note_{patient_id}",
-            height=120
+        action1, action2, action3 = st.columns(
+            [1, 1, 3]
         )
 
-        if st.button("Salva nota", key=f"save_note_{patient_id}"):
-            save_doctor_note(patient_id, note)
-            st.success("Nota salvata")
-            st.rerun()
+        with action1:
+
+            pdf_url = r[8]
+
+            if pdf_url:
+                st.link_button(
+                    "📄 PDF",
+                    pdf_url,
+                    use_container_width=True
+                )
+
+        with action2:
+
+            if visitato == 0:
+
+                if st.button(
+                    "✅ Visitato",
+                    key=f"visit_{patient_id}",
+                    use_container_width=True
+                ):
+                    mark_as_visited(patient_id)
+                    st.rerun()
+
+            else:
+
+                if st.button(
+                    "↩️ Non visitato",
+                    key=f"unvisit_{patient_id}",
+                    use_container_width=True
+                ):
+                    mark_as_not_visited(patient_id)
+                    st.rerun()
+
+        # =========================
+        # NOTE
+        # =========================
+
+        with st.expander("📝 Note del dentista"):
+
+            note = st.text_area(
+                "Scrivi una nota",
+                value=doctor_note or "",
+                key=f"note_{patient_id}",
+                height=120
+            )
+
+            if st.button(
+                "Salva nota",
+                key=f"save_note_{patient_id}"
+            ):
+                save_doctor_note(
+                    patient_id,
+                    note
+                )
+
+                st.success("Nota salvata")
+                st.rerun()
 
     st.markdown(
-        "<hr style='margin:2px 0'>",
+        "<div style='height:6px'></div>",
         unsafe_allow_html=True
     )
-
-# =========================
-# FOOTER
-# =========================
 
 import base64
 

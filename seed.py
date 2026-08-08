@@ -3,33 +3,37 @@ from db import get_conn
 USERS = [
 
     (
-        "francesco.tartari",
-        "1687",
-        "dr-francesco-tartari",
-        "Dr. Francesco Tartari"
-    ),
-
-    (
         "iacopo.malandrucco",
         "5191",
         "dr-iacopo-malandrucco",
         "Dr. Iacopo Malandrucco",
+        "iacopomalandrucco@gmail.com"
     ),
 
     (
         "niccolo.leonardini",
         "1234",
         "dr-niccolo-leonardini",
-        "Dr. Niccolò Leonardini"
+        "Dr. Niccolò Leonardini",
+        "niccololeonardini0@gmail.com"
     ),
 
     (
         "alessandro.contese",
         "4862",
         "studio-dentistico-contese",
-        "Studio dentistico Contese"
+        "Studio dentistico Contese",
+        "conteseale@gmail.com"
     ),
-#    (
+#
+    (
+        "nicola.raciti",
+        "3991",
+        "dr-nicola-raciti",
+        "Dr. Nicola Raciti",
+        "Dott.raciti@gmail.com"
+    ),
+    #    (
 #        "marco.rossi",
 #        "7890",
 #        "dr-marco-rossi",
