@@ -169,21 +169,21 @@ doctor_email = get_doctor_email(studio_id)
 if not doctor_name:
     doctor_name = "Studio Odontoiatrico"
 
-st.markdown(f"""
-<div style="
-    text-align:center;
-    font-family:'Palatino Linotype', 'Book Antiqua', Palatino, serif;
-    font-size:clamp(40px, 8vw, 64px);
-    font-weight:900;
-    color:#0B1F3A;
-    letter-spacing:1px;
-    margin-top:15px;
-    margin-bottom:15px;
-    text-shadow:0px 2px 4px rgba(0,0,0,0.12);
-">
-    {doctor_name}
-</div>
-""", unsafe_allow_html=True)
+st.markdown(
+    f"""
+    <div style="
+        text-align:center;
+        font-size:80px;
+        font-weight:800;
+        color:#0B1F3A;
+        margin-top:10px;
+        margin-bottom:20px;
+    ">
+        {doctor_name}
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 st.markdown("""
 <div style="
