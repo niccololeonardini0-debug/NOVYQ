@@ -1,4 +1,3 @@
-import sqlite3
 import os
 import streamlit as st
 import psycopg2

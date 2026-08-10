@@ -173,7 +173,7 @@ st.markdown(
     f"""
     <div style="
         text-align:center;
-        font-size:80px;
+        font-size:64px;
         font-weight:800;
         color:#0B1F3A;
         margin-top:10px;
