@@ -163,7 +163,7 @@ st.markdown(
     <div style="
         text-align:center;
         font-family:'Palatino Linotype','Book Antiqua',Palatino,serif;
-        font-size:clamp(40px,8vw,64px);
+        font-size: clamp(48px, 9vw, 72px);
         font-weight:1000;
         color:#0B1F3A;
         letter-spacing:1px;
